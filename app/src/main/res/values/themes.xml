@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Skycond" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:windowBackground">@color/background_light</item>
+        <item name="android:statusBarColor">@color/background_light</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="iconColor">@color/lite_icon_color</item>
+        <item name="titleTextColor">@color/black_text_color</item>
+        <item name="searchEditTextColor">@color/lite_search_edit_text_color</item>
+        <item name="subtitleTextColor">@color/lite_subtitle_text_color</item>
+    </style>
+</resources>

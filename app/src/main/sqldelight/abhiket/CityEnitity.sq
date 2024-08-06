@@ -1,0 +1,8 @@
+CREATE TABLE CityEntity (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    country TEXT NOT NULL,
+    latitude REAL NOT NULL,
+    longitude REAL NOT NULL,
+    UNIQUE (name, latitude, longitude) -- Ensures uniqueness for each city
+);

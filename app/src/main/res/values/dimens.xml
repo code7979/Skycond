@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="weather_icon">128dp</dimen>
+    <dimen name="very_large">28dp</dimen>
+    <dimen name="large">24dp</dimen>
+    <dimen name="medium">16dp</dimen>
+    <dimen name="mini">8dp</dimen>
+    <dimen name="mini_text">10sp</dimen>
+    <dimen name="nano">4dp</dimen>
+</resources>

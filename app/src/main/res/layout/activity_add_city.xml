@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".presentation.activities.AddCityActivity">
+
+    <LinearLayout
+        android:id="@+id/search_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:paddingStart="@dimen/medium"
+        android:paddingEnd="0dp"
+        android:paddingVertical="@dimen/mini"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/ed_search"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit_text_search_background"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:drawableStart="@drawable/ic_search"
+            android:textSize="14sp"
+            android:drawablePadding="@dimen/mini"
+            android:hint="@string/search_city"
+            android:paddingHorizontal="@dimen/medium"
+            android:paddingVertical="@dimen/mini"
+            android:autofillHints="@string/search" />
+        <Button
+            android:id="@+id/btn_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:textAllCaps="false"
+            android:textColor="@color/color_center_gradient"
+            android:text="@string/search" />
+
+    </LinearLayout>
+
+
+    <ProgressBar
+        android:id="@+id/loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_centerInParent="true"
+        android:indeterminateOnly="true" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/city_recycler_view"
+        tools:listitem="@layout/city_row"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/search_bar_layout"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>
