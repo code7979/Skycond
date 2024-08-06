@@ -12,8 +12,7 @@ import kotlin.concurrent.Volatile
 internal object UNINITIALIZED_VALUE
 
 class AppSingleton private constructor(context: Context) {
-
-    val apiKey: String = "c43260df4504466aa989a4a2b4accb04"
+    val apiKey: String = context.getString(R.string.api_key)
 
     val weatherApi: WeatherApi by lazy {
         Retrofit.Builder().baseUrl(WeatherApi.BASE_URL)
