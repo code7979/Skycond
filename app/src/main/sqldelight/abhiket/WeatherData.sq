@@ -1,0 +1,152 @@
+CREATE TABLE IF NOT EXISTS WeatherData (
+    cityId INTEGER NOT NULL,
+    lastUpdate INTEGER NOT NULL,
+    timeZone INTEGER NOT NULL,
+    description TEXT NOT NULL,
+    icon TEXT NOT NULL,
+    temp REAL NOT NULL,
+    feelsLike REAL NOT NULL,
+    tempMin REAL NOT NULL,
+    tempMax REAL NOT NULL,
+    pressure INTEGER NOT NULL,
+    humidity INTEGER NOT NULL CHECK (humidity >= 0 AND humidity <= 100), -- Ensures humidity is between 0 and 100
+    seaLevel INTEGER, -- Allowing seaLevel to be negative or positive
+    groundLevel INTEGER DEFAULT 0,
+    visibility INTEGER NOT NULL CHECK (visibility >= 0), -- Ensures visibility is non-negative
+    windSpeed REAL NOT NULL CHECK (windSpeed >= 0), -- Ensures wind speed is non-negative
+    windDeg INTEGER NOT NULL CHECK (windDeg >= 0 AND windDeg <= 360), -- Ensures wind direction is between 0 and 360
+    clouds INTEGER NOT NULL CHECK (clouds >= 0 AND clouds <= 100), -- Ensures clouds percentage is between 0 and 100
+    sunrise INTEGER NOT NULL,
+    sunset INTEGER NOT NULL,
+    FOREIGN KEY (cityId) REFERENCES CityEntity(id)
+);
+
+CREATE INDEX idx_weatherdata_cityId ON WeatherData(cityId); -- Index for cityId for faster joins
+
+
+getCitiesId:
+SELECT id FROM CityEntity;
+
+getCities:
+SELECT * FROM CityEntity;
+
+getCityById:
+SELECT * FROM CityEntity WHERE id = ?;
+
+insetCity:
+INSERT INTO CityEntity (id, name, country, latitude, longitude)
+VALUES (?,?,?,?,?);
+
+insertWeatherData {
+    INSERT INTO CityEntity (id, name, country, latitude, longitude) VALUES (:cityId,:cityName,:cityCountry,:cityLatitude,:cityLongitude);
+    INSERT INTO WeatherData (cityId, lastUpdate, timeZone, description, icon, temp, feelsLike, tempMin, tempMax, pressure,humidity, seaLevel, groundLevel, visibility, windSpeed, windDeg, clouds, sunrise, sunset)
+                     VALUES (
+                     :cityId,
+                     :lastUpdate,
+                     :timeZone,
+                     :description,
+                     :icon,
+                     :temp,
+                     :feelsLike,
+                     :tempMin,
+                     :tempMax,
+                     :pressure,
+                     :humidity,
+                     :seaLevel,
+                     :groundLevel,
+                     :visibility,
+                     :windSpeed,
+                     :windDeg,
+                     :clouds,
+                     :sunrise,
+                     :sunset
+                     );
+}
+
+updateWeatherDataEntity {
+    UPDATE WeatherData SET
+        lastUpdate  = :lastUpdate,
+        timeZone    = :timeZone,
+        description = :description,
+        icon        = :icon,
+        temp        = :temp,
+        feelsLike   = :feelsLike,
+        tempMin     = :tempMin,
+        tempMax     = :tempMax,
+        pressure    = :pressure,
+        humidity    = :humidity,
+        seaLevel    = :seaLevel,
+        groundLevel = :groundLevel,
+        visibility  = :visibility,
+        windSpeed   = :windSpeed,
+        windDeg     = :windDeg,
+        clouds      = :clouds,
+        sunrise     = :sunrise,
+        sunset      = :sunset
+    WHERE
+        cityId = ?;
+}
+
+deleteWeatherData {
+    DELETE FROM WeatherData WHERE cityId = :cityId;
+    DELETE FROM CityEntity  WHERE id     = :cityId;
+}
+
+weatherDataEntity:
+SELECT
+    CityEntity.id AS cityId,
+    CityEntity.name AS cityName,
+    CityEntity.country AS cityCountry,
+    CityEntity.latitude AS cityLatitude,
+    CityEntity.longitude AS cityLongitude,
+    WeatherData.timeZone,
+    WeatherData.description,
+    WeatherData.icon,
+    WeatherData.temp,
+    WeatherData.feelsLike,
+    WeatherData.tempMin,
+    WeatherData.tempMax,
+    WeatherData.pressure,
+    WeatherData.humidity,
+    WeatherData.seaLevel,
+    WeatherData.groundLevel,
+    WeatherData.visibility,
+    WeatherData.windSpeed,
+    WeatherData.windDeg,
+    WeatherData.clouds,
+    WeatherData.sunrise,
+    WeatherData.sunset,
+    WeatherData.lastUpdate
+FROM
+    CityEntity
+JOIN
+    WeatherData
+ON
+    CityEntity.id = WeatherData.cityId
+WHERE
+    CityEntity.id = ?;
+
+
+Cities:
+SELECT
+    CityEntity.id AS cityId,
+    CityEntity.name AS cityName,
+    CityEntity.country AS cityCountry,
+    WeatherData.temp,
+    WeatherData.tempMin,
+    WeatherData.tempMax,
+    WeatherData.lastUpdate
+FROM
+    CityEntity
+JOIN
+    WeatherData
+ON
+    CityEntity.id = WeatherData.cityId;
+
+
+
+
+
+
+
+

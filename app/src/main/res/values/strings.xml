@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Skycond</string>
+    <string name="weather_icon">weather_icon</string>
+    <string name="feel_like">Feel like</string>
+    <string name="degree_celsius_36">36° C</string>
+    <string name="max">Max: </string>
+    <string name="min">Min: </string>
+    <string name="humidity">Humidity</string>
+    <string name="pressure">Pressure</string>
+    <string name="wind">Wind</string>
+    <string name="visibility">Visibility</string>
+    <string name="clouds">Clouds</string>
+    <string name="wind_direction">Wind Dir</string>
+    <string name="subtitle">Weather Made Simple</string>
+    <string name="updating">Updating</string>
+    <string name="add_your_city">Add City</string>
+    <string name="your_city">Your City</string>
+    <string name="not_implemented_yet">Not Implemented yet</string>
+
+    <string name="found_null">Found Null.</string>
+    <string name="successfully_updated">Successfully Updated</string>
+    <string name="failure_updated">Failed to update</string>
+
+    <string name="error_fetching_data">Error fetching data. Please try again in a few moments.</string>
+    <string name="network_issue">Data retrieval failed due to a network issue. Please try again shortly.</string>
+
+    <string name="http_error_404">Oops! The page you are looking for cannot be found.</string>
+    <string name="http_error_403">Access Denied. You do not have permission to view this page.</string>
+    <string name="http_error_500">Something went wrong on our end. Please try again later.</string>
+    <string name="http_error_502">We are having trouble connecting right now. Please try again later.</string>
+    <string name="http_error_503">Our service is currently undergoing maintenance. Please try again later.</string>
+    <string name="http_fetch_data_error">An error occurred while fetching data from server.</string>
+
+    <string name="manage_cities">Manage Cities</string>
+    <string name="cancel">Cancel</string>
+    <string name="add">Add</string>
+    <string name="search">Search</string>
+    <string name="network_on_main_th">Networking operation on its main thread is prohibited</string>
+
+    <string name="successfully_added">Successfully added your city</string>
+    <string name="failure_added">Failed to add the city</string>
+    <!-- In real project or if want to work this app correctly You need  openweathermap.com api key -->
+    <!-- Just create a account and gain key and paste it here, Rock up -->git
+    <string name="api_key">Api_Key</string>
+    <string name="details">DETAILS</string>
+    <string name="search_city">Search your city here</string>
+    <string name="entity_found_null">Retried null from database</string>
+    <string name="remove_city">Remove City</string>
+</resources>

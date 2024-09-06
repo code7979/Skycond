@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="weather_icon">160dp</dimen>
+    <dimen name="very_large">28dp</dimen>
+    <dimen name="large">24dp</dimen>
+    <dimen name="medium">16dp</dimen>
+    <dimen name="mini">8dp</dimen>
+    <dimen name="nano">4dp</dimen>
+
+    <dimen name="current_temp">84sp</dimen>
+    <dimen name="large_text">24sp</dimen>
+    <dimen name="medium_text">16sp</dimen>
+    <dimen name="mini_text">10sp</dimen>
+
+    <dimen name="indicator_thickness">3dp</dimen>
+    <dimen name="_1sdp">1dp</dimen>
+    <dimen name="indicator_gape">@dimen/mini</dimen>
+    <dimen name="edit_text_min_height">42dp</dimen>
+</resources>

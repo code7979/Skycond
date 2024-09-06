@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="Theme">
+        <attr name="weatherIconColor" format="color" />
+        <attr name="subtitle_text_color" format="color" />
+        <attr name="searchEditTextColor" format="color" />
+        <attr name="weatherScreenTextColor" format="color" />
+        <attr name="weatherScreenIconColor" format="color" />
+        <attr name="weatherScreenDividerColor" format="color" />
+    </declare-styleable>
+</resources>
