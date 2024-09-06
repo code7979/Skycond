@@ -41,7 +41,7 @@
     <string name="successfully_added">Successfully added your city</string>
     <string name="failure_added">Failed to add the city</string>
     <!-- In real project or if want to work this app correctly You need  openweathermap.com api key -->
-    <!-- Just create a account and gain key and paste it here, Rock up -->git
+    <!-- Just create a account and gain key and paste it here, Rock up -->
     <string name="api_key">Api_Key</string>
     <string name="details">DETAILS</string>
     <string name="search_city">Search your city here</string>
