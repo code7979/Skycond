@@ -45,20 +45,20 @@ class WeatherFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View = inflater.inflate(R.layout.fragment_weather, container, false).also {
-        progress            = it.findViewById(R.id.progress_circular_indicator)
-        weatherIcon         = it.findViewById(R.id.imageView)
-        weatherDescription  = it.findViewById(R.id.weather_description)
-        temperatureFeelLike = it.findViewById(R.id.tv_feel_like)
-        temperatureMax      = it.findViewById(R.id.tv_temp_max)
-        temperatureMin      = it.findViewById(R.id.tv_temp_min)
-        temperature         = it.findViewById(R.id.tv_main_temp)
-        visibility          = it.findViewById(R.id.tv_visibility)
-        cityName            = it.findViewById(R.id.tv_city_name)
-        pressure            = it.findViewById(R.id.tv_pressure)
-        humidity            = it.findViewById(R.id.tv_humidity)
-        clouds              = it.findViewById(R.id.tv_clouds)
-        wind                = it.findViewById(R.id.tv_wind)
-        date                = it.findViewById(R.id.tv_date)
+//        progress            = it.findViewById(R.id.progress_circular_indicator)
+       // weatherIcon         = it.findViewById(R.id.imageView)
+//        weatherDescription  = it.findViewById(R.id.weather_description)
+//        temperatureFeelLike = it.findViewById(R.id.tv_feel_like)
+//        temperatureMax      = it.findViewById(R.id.tv_temp_max)
+//        temperatureMin      = it.findViewById(R.id.tv_temp_min)
+//        temperature         = it.findViewById(R.id.tv_main_temp)
+//        visibility          = it.findViewById(R.id.tv_visibility)
+//        cityName            = it.findViewById(R.id.tv_city_name)
+//        pressure            = it.findViewById(R.id.tv_pressure)
+//        humidity            = it.findViewById(R.id.tv_humidity)
+//        clouds              = it.findViewById(R.id.tv_clouds)
+//        wind                = it.findViewById(R.id.tv_wind)
+//        date                = it.findViewById(R.id.tv_date)
 
 
 

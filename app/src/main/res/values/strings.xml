@@ -47,4 +47,7 @@
     <string name="search_city">Search your city here</string>
     <string name="entity_found_null">Retried null from database</string>
     <string name="remove_city">Remove City</string>
+    <string name="clear_sky">Clear Sky</string>
+    <string name="_15_c">15°C</string>
+    <string name="_10c">10C°</string>
 </resources>

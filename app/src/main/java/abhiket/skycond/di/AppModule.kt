@@ -17,10 +17,15 @@ import abhiket.skycond.data.remote.RemoteDataSource
 internal class AppModule(private val context: Context) {
     private val apiKey: String = context.getString(R.string.api_key)
 
+    private val retrofit:Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(WeatherApi.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
     private val weatherApi: WeatherApi by lazy {
-        Retrofit.Builder().baseUrl(WeatherApi.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create()).build()
-            .create(WeatherApi::class.java)
+            retrofit.create(WeatherApi::class.java)
     }
 
     val database: Database by lazy {

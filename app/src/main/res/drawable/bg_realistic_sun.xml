@@ -1,0 +1,26 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+
+    <!-- Yellow Sun -->
+        <gradient
+            android:centerX="0.5"
+            android:centerY="0.5"
+            android:endColor="#00FFFF00"
+            android:gradientRadius="60dp"
+            android:startColor="#FFFF00"
+            android:type="radial"
+            android:useLevel="false" />
+
+<!--    <gradient-->
+<!--        android:centerX="0.5"-->
+<!--        android:centerY="0.5"-->
+<!--        android:endColor="#00FFFFFF"-->
+<!--        android:gradientRadius="60dp"-->
+<!--        android:startColor="#FFFFFFFF"-->
+<!--        android:type="radial"-->
+<!--        android:useLevel="false" />-->
+
+    <size
+        android:width="120dp"
+        android:height="120dp" />
+</shape>

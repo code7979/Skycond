@@ -30,8 +30,12 @@
     <color name="weather_screen_bg">#FF29B2DD</color>
 
     <!-- atlassian.design -->
+
+    <!-- FOR DARK -->
     <color name="Neutral1000">#FF172B4D</color>
     <color name="Neutral800">#FF44546F</color>
+
+    <!-- FOR LIGHT -->
     <color name="Neutral600">#FF758195</color>
     <color name="Neutral00">#FAFAFA</color>
 
@@ -39,6 +43,18 @@
     <color name="Neutral400A">#091E424F</color>
     <color name="Neutral300A">#091E4224</color>
     <color name="Neutral200A">#091E420F</color>
+
+    <!-- TESTING -->
+<!--    <color name="color_background">#FFFFFF</color>-->
+<!--    <color name="color_surface">#F5F5F5</color>-->
+<!--    <color name="color_text_primary">#212121</color>-->
+<!--    <color name="color_text_secondary">#666666</color>-->
+<!--    <color name="color_divider">#E0E0E0</color>-->
+
+    <color name="color_text_primary">#FAFAFA</color>
+    <color name="color_text_secondary">#E0E0E0</color>
+    <color name="color_divider">#E0E0E0</color>
+    <color name="colorStroke">#E0E0E0</color>
 
     <!-- Material3 color -->
     <color name="md_theme_primary">#004EA0</color>

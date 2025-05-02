@@ -9,7 +9,7 @@
             <solid android:color="#41FFFFFF" />
             <stroke
                 android:width="@dimen/_1sdp"
-                android:color="?attr/weatherScreenDividerColor"/>
+                android:color="?attr/colorDivider"/>
         </shape>
     </item>
 </layer-list>

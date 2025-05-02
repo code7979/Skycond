@@ -1,4 +1,9 @@
 package abhiket.skycond.uitls
+
+import android.animation.ObjectAnimator
+import android.view.animation.LinearInterpolator
+import android.widget.ImageView
+
 //
 //const val LONGITUDE: Double = 85.1376
 //const val LATITUDE: Double = 25.5941

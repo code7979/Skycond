@@ -6,7 +6,7 @@
             android:shape="ring"
             android:thickness="@dimen/indicator_thickness"
             android:useLevel="false">
-            <solid android:color="?attr/weatherScreenDividerColor"/>
+            <solid android:color="?attr/colorDivider"/>
         </shape>
     </item>
 </layer-list>

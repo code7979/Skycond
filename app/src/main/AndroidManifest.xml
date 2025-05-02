@@ -12,15 +12,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Skycond">
         <activity
-            android:exported="false"
+            android:name=".presentation.activities.ExampleActivity"
+            android:exported="false" />
+        <activity
             android:name=".presentation.activities.AddCityActivity"
-            android:theme="@style/Theme.Skycond.AddCityActivity"
-            android:parentActivityName=".presentation.activities.WeatherActivity" />
+            android:exported="false"
+            android:parentActivityName=".presentation.activities.WeatherActivity"
+            android:theme="@style/Theme.Skycond.AddCityActivity" />
         <activity
             android:name=".presentation.activities.WeatherActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

@@ -28,6 +28,10 @@ android {
     packaging {
         resources.excludes.add("META-INF/INDEX.LIST")
     }
+
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 sqldelight {
@@ -39,26 +43,36 @@ sqldelight {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.13.1")
+    // CORE_ANDROID
+    implementation("androidx.core:core-ktx:1.13.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("androidx.annotation:annotation:1.8.2")
+    implementation("androidx.annotation:annotation:1.9.1")
+
+    // VIEW_PAGER
     implementation("androidx.viewpager2:viewpager2:1.1.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+
+    // CONSTRAINT_LAYOUT
+    implementation("androidx.constraintlayout:constraintlayout:2.2.1")
+
+    // CARD_VIEW
     implementation("androidx.cardview:cardview:1.0.0")
+
+    // KTX_LIBRARIES
+    implementation("androidx.activity:activity-ktx:1.9.3")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
+
+    implementation("androidx.coordinatorlayout:coordinatorlayout:1.3.0")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.4")
-    implementation("androidx.activity:activity-ktx:1.9.1")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4")
-    implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
 
     // RETROFIT2
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
 
-    //SQLITE
+    // //SQLITE
     implementation("app.cash.sqldelight:android-driver:2.0.2")
     implementation("app.cash.sqldelight:primitive-adapters:2.0.2")
 
-    // Material
+    // MATERIAL
     implementation("com.google.android.material:material:1.12.0")
 }

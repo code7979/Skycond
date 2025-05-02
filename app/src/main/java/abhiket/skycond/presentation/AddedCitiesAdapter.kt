@@ -24,7 +24,7 @@ class AddedCitiesAdapter(
         notifyDataSetChanged()
     }
 
-    inner class AddedCitiesViewHolder(itemView: View, onRemoveClicked: (Long) -> Unit) : ViewHolder(itemView) {
+    class AddedCitiesViewHolder(itemView: View, onRemoveClicked: (Long) -> Unit) : ViewHolder(itemView) {
         private var currentCity: Long? = null
 
         private val textViewMinMax: TextView = itemView.findViewById(R.id.tv_manage_cities_min_max)
