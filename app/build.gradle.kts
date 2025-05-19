@@ -62,6 +62,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
 
+    // COORDINATOR_LAYOUT
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.3.0")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 
@@ -69,10 +70,14 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
 
-    // //SQLITE
+    // SQLDELIGHT
     implementation("app.cash.sqldelight:android-driver:2.0.2")
     implementation("app.cash.sqldelight:primitive-adapters:2.0.2")
+    implementation("app.cash.sqldelight:coroutines-extensions:2.1.0")
 
     // MATERIAL
     implementation("com.google.android.material:material:1.12.0")
+
+    // TEST
+    testImplementation("junit:junit:4.13.2")
 }

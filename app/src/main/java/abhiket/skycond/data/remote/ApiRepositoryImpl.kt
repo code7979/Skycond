@@ -1,6 +1,6 @@
 package abhiket.skycond.data.remote
 
-import abhiket.skycond.data.remote.model.WeatherDataDto
+import abhiket.skycond.data.remote.model.CityWeather
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
@@ -13,7 +13,7 @@ class ApiRepositoryImpl(private val weatherApi: WeatherApi, private val apiKey: 
     suspend fun getWeatherData(latitude: Double, longitude: Double) = withContext(Dispatchers.IO) {
         val call = weatherApi.getWeatherData(latitude, longitude, apiKey)
         try {
-            val response: Response<WeatherDataDto> = call.execute()
+            val response: Response<CityWeather> = call.execute()
             if (response.isSuccessful) {
                 val body = response.body()
                 if (body != null) {

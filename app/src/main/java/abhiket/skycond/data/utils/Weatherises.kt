@@ -9,26 +9,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
-
-@JvmName("toFlow")
-fun <T : Any> Query<T>.asFlow(): Flow<Query<T>> = flow {
-    val channel = Channel<Unit>(CONFLATED)
-    channel.trySend(Unit)
-
-    val listener = Query.Listener {
-        channel.trySend(Unit)
-    }
-
-    addListener(listener)
-    try {
-        for (item in channel) {
-            emit(this@asFlow)
-        }
-    } finally {
-        removeListener(listener)
-    }
-}
-
 @JvmName("toLiveData")
 fun <T : Any> Query<T>.asLiveData(scope: CoroutineScope): LiveData<T> = object : LiveData<T>() {
     val listener = Query.Listener {
@@ -65,6 +45,30 @@ fun <T : Any> Query<T>.asListLiveData(
         addListener(listener)
         scope.launch {
             postValue(executeAsList())
+        }
+        super.onActive()
+    }
+
+    override fun onInactive() {
+        super.onInactive()
+        removeListener(listener)
+    }
+}
+
+@JvmName("toListLiveData")
+fun <T : Any, R> Query<T>.asListLiveData(
+    coroutineScope: CoroutineScope, transform: (T) -> R
+): LiveData<List<R>> = object : LiveData<List<R>>() {
+    val listener = Query.Listener {
+        coroutineScope.launch {
+            postValue(executeAsList().map(transform))
+        }
+    }
+
+    override fun onActive() {
+        addListener(listener)
+        coroutineScope.launch {
+            postValue(executeAsList().map(transform))
         }
         super.onActive()
     }

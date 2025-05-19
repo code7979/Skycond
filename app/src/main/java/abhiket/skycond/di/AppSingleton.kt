@@ -1,11 +1,11 @@
 package abhiket.skycond.di
 
-import abhiket.Database
+//import abhiket.Database
 import abhiket.skycond.R
 import abhiket.skycond.data.remote.WeatherApi
 import android.content.Context
-import androidx.sqlite.db.SupportSQLiteDatabase
-import app.cash.sqldelight.driver.android.AndroidSqliteDriver
+//import androidx.sqlite.db.SupportSQLiteDatabase
+//import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import kotlin.concurrent.Volatile
@@ -21,19 +21,19 @@ class AppSingleton private constructor(context: Context) {
             .create(WeatherApi::class.java)
     }
 
-    val database: Database by lazy {
-        Database(
-            AndroidSqliteDriver(schema = Database.Schema,
-                context = context,
-                name = "skycond_datastore",
-                callback = object : AndroidSqliteDriver.Callback(Database.Schema) {
-                    override fun onOpen(db: SupportSQLiteDatabase) {
-                        db.setForeignKeyConstraintsEnabled(true)
-                    }
-                }
-            )
-        )
-    }
+//    val database: Database by lazy {
+//        Database(
+//            AndroidSqliteDriver(schema = Database.Schema,
+//                context = context,
+//                name = "skycond_datastore",
+//                callback = object : AndroidSqliteDriver.Callback(Database.Schema) {
+//                    override fun onOpen(db: SupportSQLiteDatabase) {
+//                        db.setForeignKeyConstraintsEnabled(true)
+//                    }
+//                }
+//            )
+//        )
+//    }
 
     companion object {
         @Volatile

@@ -3,6 +3,13 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="http" />
+        </intent>
+    </queries>
+
     <application
         android:allowBackup="true"
         android:allowClearUserData="true"
@@ -12,19 +19,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Skycond">
         <activity
-            android:name=".presentation.activities.ExampleActivity"
-            android:exported="false" />
-        <activity
-            android:name=".presentation.activities.AddCityActivity"
+            android:name=".presentation.activities.ManagerActivity"
             android:exported="false"
-            android:parentActivityName=".presentation.activities.WeatherActivity"
-            android:theme="@style/Theme.Skycond.AddCityActivity" />
+            android:parentActivityName=".presentation.activities.WeatherActivity" />
+
         <activity
             android:name=".presentation.activities.WeatherActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.Skycond.Weather">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

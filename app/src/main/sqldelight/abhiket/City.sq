@@ -1,0 +1,49 @@
+CREATE TABLE IF NOT EXISTS City(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL COLLATE NOCASE,
+    latitude REAL NOT NULL,
+    longitude REAL NOT NULL,
+    state TEXT COLLATE NOCASE,
+    country TEXT COLLATE NOCASE,
+    UNIQUE (latitude, longitude)
+);
+
+-- 🔍 GET all cities
+getCities:
+SELECT * FROM City;
+
+getCity:
+SELECT * FROM City WHERE name = ? AND state = ? AND country = ?;
+
+getCityByState:
+SELECT * FROM City WHERE name = ? AND state = ?;
+
+getCityByName:
+SELECT * FROM City WHERE name = ?;
+
+getCityCoordinate:
+SELECT * FROM City WHERE latitude = ? AND longitude = ?;
+
+getCityByCountry:
+SELECT * FROM City WHERE country = ?;
+
+
+-- ✅ INSERT Query
+insertCity:
+INSERT INTO City (name, latitude, longitude, state, country)
+VALUES (?, ?, ?, ?, ?);
+
+-- 🔄 UPDATE Query
+updateCity:
+UPDATE City
+SET name = ?,
+    latitude = ?,
+    longitude = ?,
+    state = ?,
+    country = ?
+WHERE id = ?;
+
+
+-- ❌ DELETE Query
+deleteCity:
+DELETE FROM City WHERE name = ? AND latitude = ? AND longitude = ?;

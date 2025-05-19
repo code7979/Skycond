@@ -1,0 +1,71 @@
+cityWeather:
+SELECT
+    City.id AS cityId,
+    City.name AS cityName,
+    City.state AS cityState,
+    City.country AS cityCountry,
+    City.latitude AS cityLatitude,
+    City.longitude AS cityLongitude,
+    Weather.conditionId,
+    Weather.main,
+    Weather.description ,
+    Weather.icon,
+    Weather.temp,
+    Weather.feelsLike,
+    Weather.tempMin,
+    Weather.tempMax,
+    Weather.pressure,
+    Weather.humidity,
+    Weather.seaLevel,
+    Weather.groundLevel,
+    Weather.visibility,
+    Weather.windSpeed,
+    Weather.windDeg,
+    Weather.clouds,
+    Weather.sunrise,
+    Weather.sunset,
+    Weather.timeZone,
+    Weather.lastUpdate
+FROM
+    City
+JOIN
+    Weather
+ON
+    City.id = Weather.cityId;
+
+
+getCityWeatherById:
+SELECT
+    City.id AS cityId,
+    City.name AS cityName,
+    City.country AS cityCountry,
+    City.latitude AS cityLatitude,
+    City.longitude AS cityLongitude,
+    Weather.conditionId,
+    Weather.main,
+    Weather.description ,
+    Weather.icon,
+    Weather.temp,
+    Weather.feelsLike,
+    Weather.tempMin,
+    Weather.tempMax,
+    Weather.pressure,
+    Weather.humidity,
+    Weather.seaLevel,
+    Weather.groundLevel,
+    Weather.visibility,
+    Weather.windSpeed,
+    Weather.windDeg,
+    Weather.clouds,
+    Weather.sunrise,
+    Weather.sunset,
+    Weather.timeZone,
+    Weather.lastUpdate
+FROM
+    City
+JOIN
+    Weather
+ON
+    City.id = Weather.cityId
+WHERE
+    City.id = ?;

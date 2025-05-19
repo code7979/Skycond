@@ -1,79 +1,95 @@
 package abhiket.skycond.presentation.viewmodels
 
-import abhiket.WeatherDataEntity
 import abhiket.skycond.R
-import abhiket.skycond.data.local.LocalDataSource
-import abhiket.skycond.data.remote.RemoteDataSource
-import abhiket.skycond.di.Singleton
-import abhiket.skycond.presentation.fragments.WeatherFragment
-import abhiket.skycond.uitls.ScreenState
-import abhiket.skycond.uitls.shouldUpdateData
-import abhiket.skycond.uitls.toStringRes
-import abhiket.skycond.uitls.toWeatherDataEntity
-import android.content.Context
+import abhiket.skycond.domain.CityWeatherRepository
+import abhiket.skycond.presentation.model.City
+import abhiket.skycond.presentation.utils.ItemState
+import abhiket.skycond.presentation.utils.StringValue
+import abhiket.skycond.presentation.utils.UiState
+import abhiket.skycond.presentation.utils.asDomainCity
+import abhiket.skycond.presentation.utils.asPresentationCity
+import abhiket.skycond.presentation.utils.asPresentationWeather
+import abhiket.skycond.presentation.utils.toStringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
+import abhiket.skycond.domain.model.CityWeather as DomainCityWeather
+import abhiket.skycond.presentation.model.CityWeather as PresentationCityWeather
 
 class WeatherViewModel(
-    private val savedStateHandle: SavedStateHandle,
-    private val remoteDataSource: RemoteDataSource,
-    private val localDataSource: LocalDataSource
+    private val cityWeatherRepository: CityWeatherRepository
 ) : ViewModel() {
-    private val _isLoading = MutableLiveData<ScreenState>()
-    val isLoading: LiveData<ScreenState> get() = _isLoading
+    private val _cityWeatherState = MutableLiveData<UiState<List<PresentationCityWeather>>>()
+    val cityWeatherState: LiveData<UiState<List<PresentationCityWeather>>> get() = _cityWeatherState
 
-    private val cityId = savedStateHandle.get<Long>(WeatherFragment.ARG_CITY_ID) ?: -1
-    val weatherDataEntity: LiveData<WeatherDataEntity> =
-        localDataSource.weatherDataEntityLiveData(cityId, viewModelScope)
+    private val _isUpdating = MutableLiveData<ItemState<Int>>()
+    val isUpdating: LiveData<ItemState<Int>> get() = _isUpdating
 
-    fun updateWeatherData() {
-        val data = weatherDataEntity.value
-        if (data != null && shouldUpdateData(data.lastUpdate)) {
-            updateWeatherDataUsingNetwork(data)
-        }
-    }
 
-    private fun updateWeatherDataUsingNetwork(entity: WeatherDataEntity) = viewModelScope.launch {
-        // Set start loading (Display progress indicator)
-        _isLoading.postValue(ScreenState.Loading)
-        val longitude = entity.cityLongitude
-        val latitude = entity.cityLatitude
-        try {
-            val weatherData = remoteDataSource.getWeatherData(latitude, longitude)
-            localDataSource.updateWeatherDataEntity(weatherData.toWeatherDataEntity())
-            _isLoading.postValue(ScreenState.Success)
-        } catch (e: IOException) {
-            _isLoading.postValue(ScreenState.Failure(R.string.network_issue))
-        } catch (e: HttpException) {
-            _isLoading.postValue(ScreenState.Failure(e.code().toStringRes()))
-        } catch (e: KotlinNullPointerException) {
-            _isLoading.postValue(ScreenState.Failure(R.string.error_fetching_data))
-        } catch (e: NullPointerException) {
-            _isLoading.postValue(ScreenState.Failure(R.string.error_fetching_data))
-        }
-    }
-
-    companion object {
-        private const val TAG = "WeatherFragment"
-        fun createViewModelFactory(context: Context) = viewModelFactory {
-            initializer {
-                val appModule = Singleton.getInstance(context).appModule
-                WeatherViewModel(
-                    savedStateHandle = createSavedStateHandle(),
-                    remoteDataSource = appModule.remoteDataSource,
-                    localDataSource = appModule.localDataSource
-                )
+    init {
+        viewModelScope.launch {
+            _cityWeatherState.value = UiState.Loading
+            cityWeatherRepository.cityWeathers.collect { entities ->
+                val cityWeatherList: List<PresentationCityWeather> =
+                    entities.map { domainCityWeather: DomainCityWeather ->
+                        PresentationCityWeather(
+                            domainCityWeather.city.asPresentationCity(),
+                            domainCityWeather.weather.asPresentationWeather()
+                        )
+                    }
+                _cityWeatherState.value = UiState.Success(cityWeatherList)
             }
         }
+    }
+
+    fun onRefresh(position: Int, city: City) = viewModelScope.launch {
+        _isUpdating.postValue(ItemState.Loading(position))
+        cityWeatherRepository.updateWeather(city.asDomainCity()).fold(
+            onSuccess = {
+                _isUpdating.postValue(ItemState.Success(position))
+            },
+            onFailure = { exception ->
+                when (exception) {
+                    is HttpException -> {
+                        val stringRes = exception.code().toStringRes()
+                        _isUpdating.postValue(
+                            ItemState.Failure(position, StringValue.StringResource(stringRes))
+                        )
+                    }
+
+                    is IOException -> {
+                        _isUpdating.postValue(
+                            ItemState.Failure(
+                                position,
+                                StringValue.StringResource(R.string.error_network_issue)
+                            )
+                        )
+                    }
+
+                    is KotlinNullPointerException -> {
+                        _isUpdating.postValue(
+                            ItemState.Failure(
+                                position,
+                                StringValue.StringResource(R.string.error_fetching_data)
+                            )
+                        )
+                    }
+
+                    else -> {
+                        _isUpdating.postValue(
+                            ItemState.Failure(
+                                position,
+                                StringValue.StringResource(R.string.error_fetch_data)
+                            )
+                        )
+                    }
+                }
+            }
+        )
     }
 
 }
