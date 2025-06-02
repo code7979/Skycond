@@ -4,8 +4,7 @@ import abhiket.skycond.R
 import abhiket.skycond.databinding.ActivityManagerBinding
 import abhiket.skycond.di.Singleton
 import abhiket.skycond.presentation.adapter.ManageCitiesAdapter
-import abhiket.skycond.presentation.adapter.OnItemClickedListener
-import abhiket.skycond.presentation.adapter.OnItemLongClickedListener
+import abhiket.skycond.presentation.adapter.ManageCitiesAdapterListener
 import abhiket.skycond.presentation.adapter.SearchedCityAdapter
 import abhiket.skycond.presentation.utils.UiState
 import abhiket.skycond.presentation.utils.setUpActionBar
@@ -39,8 +38,7 @@ import java.util.Locale
 
 class ManagerActivity : AppCompatActivity(),
     ActionMode.Callback,
-    OnItemClickedListener,
-    OnItemLongClickedListener,
+    ManageCitiesAdapterListener,
     TextView.OnEditorActionListener {
 
     private lateinit var binding: ActivityManagerBinding
@@ -64,8 +62,7 @@ class ManagerActivity : AppCompatActivity(),
     private val addedCityAdapter: ManageCitiesAdapter by lazy {
         ManageCitiesAdapter(
             this as Context,
-            this as OnItemClickedListener,
-            this as OnItemLongClickedListener
+            this as ManageCitiesAdapterListener,
         )
     }
 
@@ -187,6 +184,9 @@ class ManagerActivity : AppCompatActivity(),
         }
     }
 
+
+    /**************************[ ManageCitiesAdapterListener's Methods ] **********************/
+
     override fun onItemClicked(view: View, position: Int) {
         when (view.id) {
             R.id.item_btn_location -> {
@@ -248,6 +248,12 @@ class ManagerActivity : AppCompatActivity(),
         }
     }
 
+    override fun onSizeChange(size: Int) {
+        viewModel.setSelectedItemCount(size)
+    }
+
+    /******************************************************************************************/
+
 
     /**************************** [ACTION MODE CALLBACK METHOD] ******************************/
 
@@ -265,7 +271,7 @@ class ManagerActivity : AppCompatActivity(),
     override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.contextual_menu_delete -> {
-                val citiesId = addedCityAdapter.selectedCitisId
+                val citiesId = addedCityAdapter.selectedCitiesId
                 viewModel.onDeleteCities(citiesId)
                 mode.finish()
                 return true

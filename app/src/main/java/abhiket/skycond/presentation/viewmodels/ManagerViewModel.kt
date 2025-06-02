@@ -69,6 +69,10 @@ class ManagerViewModel(
         }
     }
 
+    fun setSelectedItemCount(size: Int) {
+        _selectedItemCount.postValue(size)
+    }
+
     fun onSearchCity(query: String) {
         _searchedQueryState.postValue(UiState.Loading)
         if (query.isNotBlank()) {
@@ -126,9 +130,5 @@ class ManagerViewModel(
             )
         }
     }
-
-//    fun setActionModeActive(isActive: Boolean) {
-//        _isActionModeActive.postValue(isActive)
-//    }
 
 }

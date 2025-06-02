@@ -30,10 +30,14 @@ import java.util.List;
 public final class ManageCitiesAdapter extends RecyclerView.Adapter<ManageCitiesAdapter.AddedCitiesViewHolder> {
     @NotNull
     private final AsyncListDiffer<CityWeatherManage> asyncListDiffer = new AsyncListDiffer<>(this, new ManageCitiesDiff());
+//    @NotNull
+//    private final OnItemLongClickedListener onItemLongClickedListener;
+//    @NotNull
+//    private final OnItemClickedListener onItemClickedListener;
+
     @NotNull
-    private final OnItemLongClickedListener onItemLongClickedListener;
-    @NotNull
-    private final OnItemClickedListener onItemClickedListener;
+    private final ManageCitiesAdapterListener listener;
+
     @NotNull
     private final LayoutInflater layoutInflater;
     @Nullable
@@ -41,13 +45,22 @@ public final class ManageCitiesAdapter extends RecyclerView.Adapter<ManageCities
 
     private boolean inActionMode = false;
 
+//    public ManageCitiesAdapter(
+//            @NotNull Context context,
+//            @NotNull OnItemClickedListener onItemClickedListener,
+//            @NotNull OnItemLongClickedListener onItemLongClickedListener) {
+//
+//        this.onItemClickedListener = onItemClickedListener;
+//        this.onItemLongClickedListener = onItemLongClickedListener;
+//        this.layoutInflater = LayoutInflater.from(context);
+//        this.asyncListDiffer.submitList(CollectionsKt.emptyList());
+//    }
+
     public ManageCitiesAdapter(
             @NotNull Context context,
-            @NotNull OnItemClickedListener onItemClickedListener,
-            @NotNull OnItemLongClickedListener onItemLongClickedListener) {
+            @NotNull ManageCitiesAdapterListener listener) {
 
-        this.onItemClickedListener = onItemClickedListener;
-        this.onItemLongClickedListener = onItemLongClickedListener;
+        this.listener = listener;
         this.layoutInflater = LayoutInflater.from(context);
         this.asyncListDiffer.submitList(CollectionsKt.emptyList());
     }
@@ -88,12 +101,14 @@ public final class ManageCitiesAdapter extends RecyclerView.Adapter<ManageCities
     public void addToSelectedList(int position) {
         if (selectedItems != null) {
             selectedItems.add(position);
+            listener.onSizeChange(selectedItems.size());
         }
     }
 
     public void removeFromSelectedList(int position) {
         if (selectedItems != null) {
             selectedItems.remove((Integer) position);
+            listener.onSizeChange(selectedItems.size());
         }
     }
 
@@ -103,7 +118,7 @@ public final class ManageCitiesAdapter extends RecyclerView.Adapter<ManageCities
     @Override
     public AddedCitiesViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
         ItemCityWeatherBinding binding = ItemCityWeatherBinding.inflate(layoutInflater, parent, false);
-        return new AddedCitiesViewHolder(binding, onItemClickedListener, onItemLongClickedListener);
+        return new AddedCitiesViewHolder(binding, listener);
     }
 
     @Override
@@ -134,10 +149,19 @@ public final class ManageCitiesAdapter extends RecyclerView.Adapter<ManageCities
     public void onDestroyActionMode() {
         inActionMode = false;
         if (selectedItems != null) {
+            unSelectAllItems(selectedItems);
             selectedItems.clear();
             selectedItems = null;
         }
         notifyDataSetChanged();
+    }
+
+    private void unSelectAllItems(@NonNull List<Integer> selectedItems) {
+        List<CityWeatherManage> currentList = asyncListDiffer.getCurrentList();
+        for (int index = 0; index < selectedItems.size(); index++) {
+            CityWeatherManage cityWeatherManage = currentList.get(selectedItems.get(index));
+            cityWeatherManage.setSelected(false);
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -165,12 +189,13 @@ public final class ManageCitiesAdapter extends RecyclerView.Adapter<ManageCities
                 notifyItemChanged(i);
             }
         }
+        listener.onSizeChange(selectedItems.size());
     }
 
     /*********************************************************************************************/
 
     @NonNull
-    public List<Long> getSelectedCitisId() {
+    public List<Long> getSelectedCitiesId() {
         if (selectedItems == null) return Collections.emptyList();
         List<Integer> selectedItems = this.selectedItems;
         List<Long> selectedCityWeatherIds = new ArrayList<>();
@@ -185,20 +210,18 @@ public final class ManageCitiesAdapter extends RecyclerView.Adapter<ManageCities
         @NotNull
         private final ItemCityWeatherBinding itemCityWeatherBinding;
         @NotNull
-        private final OnItemClickedListener onItemClickedListener;
+        private final OnItemClickedListener clickedListener;
 
-        @NotNull
-        private final OnItemLongClickedListener onItemLongClickedListener;
+//        @NotNull
+//        private final OnItemLongClickedListener onItemLongClickedListener;
 
         public AddedCitiesViewHolder(
                 @NotNull ItemCityWeatherBinding binding,
-                @NotNull OnItemClickedListener onItemClickedListener,
-                @NotNull OnItemLongClickedListener onItemLongClickedListener) {
+                @NotNull OnItemClickedListener clickedListener) {
 
             super(binding.getRoot());
             this.itemCityWeatherBinding = binding;
-            this.onItemClickedListener = onItemClickedListener;
-            this.onItemLongClickedListener = onItemLongClickedListener;
+            this.clickedListener = clickedListener;
             this.itemCityWeatherBinding.itemCityWeatherManage.setOnClickListener(this);
             this.itemCityWeatherBinding.itemCityWeatherManage.setOnLongClickListener(this);
 
@@ -237,14 +260,13 @@ public final class ManageCitiesAdapter extends RecyclerView.Adapter<ManageCities
         }
 
         public void onClick(@NotNull View view) {
-            this.onItemClickedListener.onItemClicked(view, this.getAbsoluteAdapterPosition());
+            this.clickedListener.onItemClicked(view, this.getAbsoluteAdapterPosition());
             view.startAnimation(AnimationUtils.loadAnimation(view.getContext(), R.anim.zoom_in_out));
         }
 
         @Override
         public boolean onLongClick(View view) {
-            view.startAnimation(AnimationUtils.loadAnimation(view.getContext(), R.anim.zoom_in_out));
-            return onItemLongClickedListener.onItemLongClick(view, this.getAbsoluteAdapterPosition());
+            return clickedListener.onItemLongClick(view, this.getAbsoluteAdapterPosition());
         }
 
     }
