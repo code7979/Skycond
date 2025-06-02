@@ -98,6 +98,20 @@ class WeatherLocalDataSourceImpl(
         }
     }
 
+    override suspend fun deleteWeathers(cityIds: List<Long>): Result<Boolean> {
+        return withContext(Dispatchers.IO) {
+            weatherQueries.transactionWithResult {
+                try {
+                    cityIds.forEach { id ->
+                        weatherQueries.deleteWeather(id)
+                    }
+                    Result.success(true)
+                } catch (exception: SQLiteException) {
+                    Result.failure(exception)
+                }
+            }
+        }
+    }
 
     override suspend fun updateWeather(
         conditionId: Long,

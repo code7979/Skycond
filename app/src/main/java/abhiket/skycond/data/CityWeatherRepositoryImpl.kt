@@ -39,8 +39,8 @@ class CityWeatherRepositoryImpl(
         )
     }
 
-    override suspend fun getCityWeather(city: City): Result<CityWeather> {
-        return cityWeatherLocalDataSource.getCityWeather(cityId = city.id).fold(
+    override suspend fun getCityWeather(cityId: Long): Result<CityWeather> {
+        return cityWeatherLocalDataSource.getCityWeather(cityId = cityId).fold(
             onSuccess = { cityWeathersLocal: GetCityWeatherById ->
                 Result.success(cityWeathersLocal.asCityWeather())
             },
@@ -124,5 +124,9 @@ class CityWeatherRepositoryImpl(
 
     override suspend fun deleteWeather(cityId: Long): Result<Boolean> {
         return weatherLocalDataSource.deleteWeather(cityId)
+    }
+
+    override suspend fun deleteWeathers(cityIds: List<Long>): Result<Boolean> {
+        return weatherLocalDataSource.deleteWeathers(cityIds)
     }
 }

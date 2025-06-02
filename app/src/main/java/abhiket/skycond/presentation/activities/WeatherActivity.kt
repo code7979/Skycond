@@ -143,9 +143,13 @@ class WeatherActivity : AppCompatActivity(), TabLayoutMediator.TabConfigurationS
         // Handle item selection.
         return when (item.itemId) {
             R.id.refresh -> {
-                Toast.makeText(this, "Refreshing", Toast.LENGTH_SHORT).show()
-                viewModel.onRefresh(currentPosition, weatherAdapter.getCity(currentPosition))
-                true
+                if (currentPosition < 0) {
+                    false
+                } else {
+                    Toast.makeText(this, "Refreshing", Toast.LENGTH_SHORT).show()
+                    viewModel.onRefresh(currentPosition, weatherAdapter.getCity(currentPosition))
+                    true
+                }
             }
 
             else -> super.onOptionsItemSelected(item)

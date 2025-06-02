@@ -9,13 +9,13 @@ import abhiket.skycond.presentation.utils.asDomainCity
 import abhiket.skycond.presentation.utils.asPresentationCity
 import abhiket.skycond.presentation.utils.asPresentationWeather
 import abhiket.skycond.presentation.utils.asStringValue
-import abhiket.skycond.presentation.utils.onEachRemove
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.handleCoroutineException
 import kotlinx.coroutines.launch
 import abhiket.skycond.domain.model.City as DomainCity
 import abhiket.skycond.domain.model.CityWeather as DomainCityWeather
@@ -31,22 +31,32 @@ class ManagerViewModel(
     private val _cityWeatherManageState = MutableLiveData<UiState<List<CityWeatherManage>>>()
     val cityWeatherManageState: LiveData<UiState<List<CityWeatherManage>>> get() = _cityWeatherManageState
 
-//    private val _isActionModeActive = MutableLiveData<Boolean>()
-//    val isActionModeActive: LiveData<Boolean> get() = _isActionModeActive
-
-
     private val _selectedItemCount = MutableLiveData<Int>()
     val selectedItemCount: LiveData<Int> get() = _selectedItemCount
-
-    private val selectedCityIdList = mutableListOf<Long>()
-
 
     var isReload: Boolean = false
         private set
 
+//    init {
+//        viewModelScope.launch {
+//            cityWeatherRepository.getCityWeathers().onSuccess { entities ->
+//                val cityWeatherManageLists: List<CityWeatherManage> =
+//                    entities.map { domainCityWeather: DomainCityWeather ->
+//                        CityWeatherManage(
+//                            domainCityWeather.city.asPresentationCity(),
+//                            domainCityWeather.weather.asPresentationWeather()
+//                        )
+//                    }
+//                _cityWeatherManageState.postValue(UiState.Success(cityWeatherManageLists))
+//            }.onFailure { exception ->
+//                _cityWeatherManageState.postValue(UiState.Failure(exception.asStringValue()))
+//            }
+//        }
+//    }
+
     init {
         viewModelScope.launch {
-            cityWeatherRepository.getCityWeathers().onSuccess { entities ->
+            cityWeatherRepository.cityWeathers.collect { entities ->
                 val cityWeatherManageLists: List<CityWeatherManage> =
                     entities.map { domainCityWeather: DomainCityWeather ->
                         CityWeatherManage(
@@ -55,20 +65,8 @@ class ManagerViewModel(
                         )
                     }
                 _cityWeatherManageState.postValue(UiState.Success(cityWeatherManageLists))
-            }.onFailure { exception ->
-                _cityWeatherManageState.postValue(UiState.Failure(exception.asStringValue()))
             }
         }
-    }
-
-    fun addToSelectedList(cityId: Long) {
-        selectedCityIdList.add(cityId)
-        _selectedItemCount.value = selectedCityIdList.size
-    }
-
-    fun removeFromSelectedList(cityId: Long) {
-        selectedCityIdList.remove(cityId)
-        _selectedItemCount.value = selectedCityIdList.size
     }
 
     fun onSearchCity(query: String) {
@@ -94,12 +92,21 @@ class ManagerViewModel(
         }
     }
 
-    fun onDeleteCities() {
+    fun onDeleteCities(cityIds: List<Long>) {
         viewModelScope.launch {
-            selectedCityIdList.onEachRemove { cityId ->
-                cityWeatherRepository.deleteWeather(cityId)
-            }
+            cityWeatherRepository.deleteWeathers(cityIds)
+        }
+    }
 
+    fun getCityById(citiesId: List<Long>) {
+        viewModelScope.launch {
+            citiesId.forEach {
+                cityWeatherRepository.getCityWeather(it).onSuccess { cityWeather ->
+                    Log.d(GTAG, "ManagerViewModel.getCityById(): ${cityWeather.city.name}")
+                }.onFailure { exception ->
+                    Log.d(GTAG, "ManagerViewModel.getCityById(): ${exception.message}")
+                }
+            }
         }
     }
 

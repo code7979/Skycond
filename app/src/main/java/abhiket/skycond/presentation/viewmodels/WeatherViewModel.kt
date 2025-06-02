@@ -60,7 +60,7 @@ class WeatherViewModel(
             _isUpdating.postValue(
                 cityWeatherRepository.updateWeather(domainCity).fold(
                     onSuccess = {
-                        cityWeatherRepository.getCityWeather(domainCity).fold(
+                        cityWeatherRepository.getCityWeather(domainCity.id).fold(
                             onSuccess = { domainCityWeather ->
                                 val presentationCityWeatherMain =
                                     CityWeatherMain(

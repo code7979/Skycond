@@ -30,8 +30,6 @@ import androidx.appcompat.view.ActionMode
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -209,11 +207,11 @@ class ManagerActivity : AppCompatActivity(),
                     if (cityWeather.isSelected) {
                         imageView.setImageResource(0)
                         cityWeather.isSelected = false
-                        viewModel.removeFromSelectedList(cityWeather.city.id)
+                        addedCityAdapter.removeFromSelectedList(position)
                     } else {
                         imageView.setImageResource(R.drawable.ic_checkbox)
                         cityWeather.isSelected = true
-                        viewModel.addToSelectedList(cityWeather.city.id)
+                        addedCityAdapter.addToSelectedList(position)
                     }
                 }
 
@@ -229,23 +227,20 @@ class ManagerActivity : AppCompatActivity(),
                 if (actionMode != null) {
                     return false
                 }
-                //  Visible checkboxesar
-                addedCityAdapter.setInActionMode(true, position)
                 // Start the CAB using the ActionMode.Callback defined earlier.
                 actionMode = startSupportActionMode(this)
                 val imageView = view.findViewById<ImageView>(R.id.iv_manage_cities_checkbox)
-                    .apply { visibility = View.VISIBLE }
                 val cityWeather = addedCityAdapter.getCityWeather(position)
                 if (cityWeather.isSelected) {
                     imageView.setImageResource(0)
                     cityWeather.isSelected = false
-                    viewModel.removeFromSelectedList(cityWeather.city.id)
+                    addedCityAdapter.removeFromSelectedList(position)
                 } else {
                     imageView.setImageResource(R.drawable.ic_checkbox)
                     cityWeather.isSelected = true
-                    viewModel.addToSelectedList(cityWeather.city.id)
+                    addedCityAdapter.addToSelectedList(position)
                 }
-                return true;
+                return true
             }
 
             else -> false
@@ -257,6 +252,7 @@ class ManagerActivity : AppCompatActivity(),
     /**************************** [ACTION MODE CALLBACK METHOD] ******************************/
 
     override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+        addedCityAdapter.onCreateActionMode()
         mode.menuInflater.inflate(R.menu.contextual_munu_manager_city, menu)
         mode.title = getString(R.string.select_item)
         return true
@@ -269,22 +265,14 @@ class ManagerActivity : AppCompatActivity(),
     override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.contextual_menu_delete -> {
-                Toast.makeText(
-                    this@ManagerActivity,
-                    "Delete",
-                    Toast.LENGTH_SHORT
-                ).show()
+                val citiesId = addedCityAdapter.selectedCitisId
+                viewModel.onDeleteCities(citiesId)
                 mode.finish()
                 return true
             }
 
             R.id.contextual_menu_select_all -> {
-                Toast.makeText(
-                    this@ManagerActivity,
-                    "Select all",
-                    Toast.LENGTH_SHORT
-                ).show()
-                mode.finish()
+                addedCityAdapter.onAllSelectCalled()
                 return true
             }
 
@@ -295,7 +283,7 @@ class ManagerActivity : AppCompatActivity(),
     }
 
     override fun onDestroyActionMode(mode: ActionMode?) {
-        addedCityAdapter.setInActionMode(false, -1)
+        addedCityAdapter.onDestroyActionMode()
         actionMode = null
     }
 

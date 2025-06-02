@@ -6,6 +6,7 @@ interface WeatherLocalDataSource {
     suspend fun getAllWeather(): Result<List<Weather>>
     suspend fun getWeatherByCityId(cityId: Long): Result<Weather>
     suspend fun deleteWeather(cityId: Long): Result<Boolean>
+    suspend fun deleteWeathers(cityIds: List<Long>): Result<Boolean>
     suspend fun updateWeather(
         conditionId: Long,
         main: String,

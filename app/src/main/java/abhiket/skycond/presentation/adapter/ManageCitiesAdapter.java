@@ -1,7 +1,5 @@
 package abhiket.skycond.presentation.adapter;
 
-import static abhiket.skycond.presentation.utils.Mapper.GTAG;
-
 import abhiket.skycond.R;
 import abhiket.skycond.databinding.ItemCityWeatherBinding;
 import abhiket.skycond.presentation.model.City;
@@ -11,31 +9,35 @@ import kotlin.collections.CollectionsKt;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.AsyncListDiffer;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
 public final class ManageCitiesAdapter extends RecyclerView.Adapter<ManageCitiesAdapter.AddedCitiesViewHolder> {
     @NotNull
     private final AsyncListDiffer<CityWeatherManage> asyncListDiffer = new AsyncListDiffer<>(this, new ManageCitiesDiff());
-
     @NotNull
     private final OnItemLongClickedListener onItemLongClickedListener;
     @NotNull
     private final OnItemClickedListener onItemClickedListener;
     @NotNull
     private final LayoutInflater layoutInflater;
+    @Nullable
+    private List<Integer> selectedItems = null;
 
     private boolean inActionMode = false;
 
@@ -50,13 +52,18 @@ public final class ManageCitiesAdapter extends RecyclerView.Adapter<ManageCities
         this.asyncListDiffer.submitList(CollectionsKt.emptyList());
     }
 
+    public void setCityWeathers(@NotNull List<CityWeatherManage> value) {
+        asyncListDiffer.submitList(value);
+    }
+
     @NotNull
     public List<CityWeatherManage> getCityWeathers() {
         return asyncListDiffer.getCurrentList();
     }
 
-    public void setCityWeathers(@NotNull List<CityWeatherManage> value) {
-        asyncListDiffer.submitList(value);
+    public void setCityWeather(int position, @NotNull CityWeatherManage element) {
+        List<CityWeatherManage> currentList = asyncListDiffer.getCurrentList();
+        currentList.set(position, element);
     }
 
     @NotNull
@@ -65,14 +72,32 @@ public final class ManageCitiesAdapter extends RecyclerView.Adapter<ManageCities
         return currentList.get(position);
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    public void setInActionMode(boolean inActionMode, int skipAtPosition) {
-        this.inActionMode = inActionMode;
-        for (int i = getItemCount() - 1; i >= 0; i--) {
-            if (i == skipAtPosition) continue;
-            notifyItemChanged(i);
+
+    public boolean isSelectedAt(int position) {
+        List<CityWeatherManage> currentList = asyncListDiffer.getCurrentList();
+        CityWeatherManage element = currentList.get(position);
+        return element.isSelected();
+    }
+
+    public void setSelectedAt(int position, boolean selected) {
+        List<CityWeatherManage> currentList = asyncListDiffer.getCurrentList();
+        CityWeatherManage element = currentList.get(position);
+        element.setSelected(selected);
+    }
+
+    public void addToSelectedList(int position) {
+        if (selectedItems != null) {
+            selectedItems.add(position);
         }
     }
+
+    public void removeFromSelectedList(int position) {
+        if (selectedItems != null) {
+            selectedItems.remove((Integer) position);
+        }
+    }
+
+    /**************************************[ RECYCLER VIEW METHODS ]*******************************/
 
     @NotNull
     @Override
@@ -92,6 +117,68 @@ public final class ManageCitiesAdapter extends RecyclerView.Adapter<ManageCities
     @Override
     public int getItemCount() {
         return asyncListDiffer.getCurrentList().size();
+    }
+
+    /********************************************[ END ]*******************************************/
+
+
+    /********************************* Method used for action mode ********************************/
+    @SuppressLint("NotifyDataSetChanged")
+    public void onCreateActionMode() {
+        inActionMode = true;
+        selectedItems = new ArrayList<>();
+        notifyDataSetChanged();
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void onDestroyActionMode() {
+        inActionMode = false;
+        if (selectedItems != null) {
+            selectedItems.clear();
+            selectedItems = null;
+        }
+        notifyDataSetChanged();
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void onAllSelectCalled() {
+        List<Integer> selectedItems = this.selectedItems;
+        if (selectedItems == null) return;
+        List<CityWeatherManage> currentList = asyncListDiffer.getCurrentList();
+        if (selectedItems.size() >= getItemCount()) {
+            selectedItems.clear();
+            for (int i = 0; i < getItemCount(); i++) {
+                CityWeatherManage cityWeather = currentList.get(i);
+                cityWeather.setSelected(false);
+                notifyItemChanged(i);
+            }
+        } else {
+            for (int i = 0; i < getItemCount(); i++) {
+                // If the selected item is already added, then we will continue
+                // otherwise, we will add it.
+                int indexOfItem = selectedItems.indexOf(i);
+                //indexofItem is  -1 if selectedItems list does not contain the element
+                if (indexOfItem != -1) continue;
+                selectedItems.add(i);
+                CityWeatherManage cityWeather = currentList.get(i);
+                cityWeather.setSelected(true);
+                notifyItemChanged(i);
+            }
+        }
+    }
+
+    /*********************************************************************************************/
+
+    @NonNull
+    public List<Long> getSelectedCitisId() {
+        if (selectedItems == null) return Collections.emptyList();
+        List<Integer> selectedItems = this.selectedItems;
+        List<Long> selectedCityWeatherIds = new ArrayList<>();
+        for (int i = 0; i < selectedItems.size(); i++) {
+            CityWeatherManage cityWeather = getCityWeather(selectedItems.get(i));
+            selectedCityWeatherIds.add(cityWeather.getCity().getId());
+        }
+        return selectedCityWeatherIds;
     }
 
     public static final class AddedCitiesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
@@ -138,6 +225,10 @@ public final class ManageCitiesAdapter extends RecyclerView.Adapter<ManageCities
             binding.tvManageCitiesMinMax.setText(minMaxTemperature);
             binding.tvManageCitiesName.setText(city.getName());
             binding.tvManageCitiesStateCountry.setText(stateCountryName);
+
+            int reid = cityWeatherManage.isSelected() ? R.drawable.ic_checkbox : 0;
+            binding.ivManageCitiesCheckbox.setImageResource(reid);
+
         }
 
         public void showCheckBoxVisibility(int visibility) {
