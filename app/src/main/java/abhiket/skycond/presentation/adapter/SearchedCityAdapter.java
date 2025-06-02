@@ -1,6 +1,7 @@
 package abhiket.skycond.presentation.adapter;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,12 +18,19 @@ import abhiket.skycond.R;
 import abhiket.skycond.databinding.ItemCityBinding;
 import abhiket.skycond.presentation.model.City;
 
-public class SearchedCityAdapter extends RecyclerView.Adapter<SearchedCityAdapter.CityViewHolder> {
+public final class SearchedCityAdapter extends RecyclerView.Adapter<SearchedCityAdapter.CityViewHolder> {
     private final OnItemClickedListener itemClickedListener;
     private List<City> cityList = new ArrayList<>();
 
-    public SearchedCityAdapter(OnItemClickedListener itemClickedListener) {
-        this.itemClickedListener = itemClickedListener;
+    private final LayoutInflater layoutInflater;
+
+    public SearchedCityAdapter(Context context, OnItemClickedListener onItemClickedListener) {
+        this.layoutInflater = LayoutInflater.from(context);
+        this.itemClickedListener = onItemClickedListener;
+    }
+
+    public LayoutInflater getLayoutInflater() {
+        return layoutInflater;
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -35,11 +43,9 @@ public class SearchedCityAdapter extends RecyclerView.Adapter<SearchedCityAdapte
         return cityList.get(position);
     }
 
-
     @NonNull
     @Override
     public CityViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         ItemCityBinding binding = ItemCityBinding.inflate(layoutInflater, parent, false);
         return new CityViewHolder(binding, itemClickedListener);
     }
@@ -70,7 +76,7 @@ public class SearchedCityAdapter extends RecyclerView.Adapter<SearchedCityAdapte
         public void bind(@NonNull City city) {
             final ItemCityBinding binding = itemCityBinding;
             ConstraintLayout mainLayout = binding.itemCityMain;
-            mainLayout.startAnimation(AnimationUtils.loadAnimation(mainLayout.getContext(), R.anim.zoon_in_out));
+            mainLayout.startAnimation(AnimationUtils.loadAnimation(mainLayout.getContext(), R.anim.zoom_in));
             binding.itemTvCityName.setText(city.getName());
             binding.itemTvCityState.setText(city.getFormattedStateAndCountry());
         }

@@ -1,4 +1,9 @@
 package abhiket.skycond.presentation.adapter;
 
-public class OnItemLongClickedListener {
+import android.view.View;
+
+import org.jetbrains.annotations.NotNull;
+
+public interface OnItemLongClickedListener {
+    boolean onItemLongClick(@NotNull View view, @NotNull int position);
 }

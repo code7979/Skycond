@@ -6,31 +6,8 @@ package abhiket.skycond.presentation.utils
 //    data class Loading<out T>(val data: T) : ItemState<T>
 //}
 
-abstract class ItemState<T>(protected var position: Int, data: T?) {
-    protected open var data: T = data
-
-    class Success<T>(position: Int, data: T) : ItemState<T>(position, data) {
-        override fun getPosition(): Int {
-            return super.position
-        }
-
-        override fun getData(): T {
-            return super.data
-        }
-    }
-
-    class Loading<T>(position: Int) : ItemState<T>(position, null) {
-        override fun getPosition(): Int {
-            return super.position
-        }
-    }
-
-    class Failure<T>(position: Int, stringValue: StringValue?) :
-        ItemState<T>(position, null) {
-        val exception: Exception? = null
-
-        override fun getPosition(): Int {
-            return super.position
-        }
-    }
+sealed class ItemState<out T>(val position: Int, val data: T? = null) {
+    class Loading(position: Int) : ItemState<Nothing>(position, null)
+    class Success<out T>(position: Int, data: T) : ItemState<T>(position, data)
+    class Failure(position: Int, val stringValue: StringValue) : ItemState<Nothing>(position, null)
 }

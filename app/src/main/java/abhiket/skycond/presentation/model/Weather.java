@@ -9,8 +9,12 @@ import abhiket.skycond.presentation.utils.Mapper;
 import android.icu.util.Calendar;
 import android.text.format.DateUtils;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 public class Weather {
     private final long conditionId;
@@ -81,7 +85,7 @@ public class Weather {
         return String.format(Locale.getDefault(), "%.2f", tempMin);
     }
 
-    public String getTempMaximumTemperatureInKelvin() {
+    public String getMaximumTemperatureInKelvin() {
         return String.format(Locale.getDefault(), "%.2f", tempMax);
     }
 
@@ -139,16 +143,46 @@ public class Weather {
     }
 
     public CharSequence getRelativeTimeSpanForUpdate() {
-        CharSequence relativeTimeSpan = DateUtils.getRelativeTimeSpanString(
+        return DateUtils.getRelativeTimeSpanString(
                 lastUpdate * 1000,
                 Calendar.getInstance().getTimeInMillis(),
                 DateUtils.MINUTE_IN_MILLIS
         );
-        return relativeTimeSpan;
     }
 
     @DrawableRes
     public int getIcon() {
         return Mapper.toDrawableRes(icon);
+    }
+
+    @Override
+    public boolean equals(@Nullable Object o) {
+        if (o == null) return false;
+        if (!(o instanceof Weather weather)) return false;
+        return conditionId == weather.conditionId
+                && Double.compare(temp, weather.temp) == 0
+                && Double.compare(feelsLike, weather.feelsLike) == 0
+                && Double.compare(tempMin, weather.tempMin) == 0
+                && Double.compare(tempMax, weather.tempMax) == 0
+                && pressure == weather.pressure
+                && humidity == weather.humidity
+                && seaLevel == weather.seaLevel
+                && groundLevel == weather.groundLevel
+                && visibility == weather.visibility
+                && Double.compare(windSpeed, weather.windSpeed) == 0
+                && windDeg == weather.windDeg
+                && clouds == weather.clouds
+                && sunrise == weather.sunrise
+                && sunset == weather.sunset
+                && timeZone == weather.timeZone
+                && getLastUpdate() == weather.getLastUpdate()
+                && main.equals(weather.main)
+                && description.equals(weather.description)
+                && icon.equals(weather.icon);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(conditionId, getMain(), getDescription(), getIcon(), temp, feelsLike, tempMin, tempMax, pressure, getHumidity(), seaLevel, groundLevel, getVisibility(), getWindSpeed(), getWindDeg(), getClouds(), sunrise, sunset, timeZone, getLastUpdate());
     }
 }

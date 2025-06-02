@@ -71,4 +71,4 @@ WHERE cityId = ?;
 
 -- ❌ DELETE Query
 deleteWeather:
-DELETE FROM Weather WHERE cityId = ? AND id = ?;
+DELETE FROM Weather WHERE cityId = ?;

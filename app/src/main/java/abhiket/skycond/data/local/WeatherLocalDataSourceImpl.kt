@@ -2,7 +2,7 @@ package abhiket.skycond.data.local
 
 import abhiket.Weather
 import abhiket.WeatherQueries
-import app.cash.sqldelight.Query
+import android.database.sqlite.SQLiteException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -10,15 +10,27 @@ class WeatherLocalDataSourceImpl(
     private val weatherQueries: WeatherQueries
 ) : WeatherLocalDataSource {
 
-    override suspend fun getAllWeather(): Query<Weather> {
+    override suspend fun getAllWeather(): Result<List<Weather>> {
         return withContext(Dispatchers.IO) {
-            weatherQueries.getAllWeather()
+            try {
+                val weathers = weatherQueries.getAllWeather().executeAsList()
+                Result.success(weathers)
+            } catch (exception: SQLiteException) {
+                Result.failure(exception)
+            }
         }
     }
 
-    override suspend fun getWeatherByCityId(cityId: Long): Query<Weather> {
+    override suspend fun getWeatherByCityId(cityId: Long): Result<Weather> {
         return withContext(Dispatchers.IO) {
-            weatherQueries.getWeatherByCityId(cityId)
+            try {
+                val weather = weatherQueries.getWeatherByCityId(cityId).executeAsOne()
+                Result.success(weather)
+            } catch (exception: NullPointerException) {
+                Result.failure(exception)
+            } catch (exception: SQLiteException) {
+                Result.failure(exception)
+            }
         }
     }
 
@@ -45,35 +57,47 @@ class WeatherLocalDataSourceImpl(
         timeZone: Long,
         lastUpdate: Long
     ) = withContext(Dispatchers.IO) {
-        weatherQueries.insertWeather(
-            cityId,
-            conditionId,
-            main,
-            description,
-            icon,
-            temp,
-            feelsLike,
-            tempMin,
-            tempMax,
-            pressure,
-            humidity,
-            seaLevel,
-            groundLevel,
-            visibility,
-            windSpeed,
-            windDeg,
-            clouds,
-            sunrise,
-            sunset,
-            timeZone,
-            lastUpdate
-        )
+        try {
+            weatherQueries.insertWeather(
+                cityId,
+                conditionId,
+                main,
+                description,
+                icon,
+                temp,
+                feelsLike,
+                tempMin,
+                tempMax,
+                pressure,
+                humidity,
+                seaLevel,
+                groundLevel,
+                visibility,
+                windSpeed,
+                windDeg,
+                clouds,
+                sunrise,
+                sunset,
+                timeZone,
+                lastUpdate
+            )
+            Result.success(true)
+        } catch (exception: SQLiteException) {
+            Result.failure(exception)
+        }
     }
 
-    override suspend fun deleteWeather(cityId: Long, weatherId: Long) =
-        withContext(Dispatchers.IO) {
-            weatherQueries.deleteWeather(cityId, weatherId)
+    override suspend fun deleteWeather(cityId: Long): Result<Boolean> {
+        return withContext(Dispatchers.IO) {
+            try {
+                weatherQueries.deleteWeather(cityId)
+                Result.success(true)
+            } catch (exception: SQLiteException) {
+                Result.failure(exception)
+            }
         }
+    }
+
 
     override suspend fun updateWeather(
         conditionId: Long,
@@ -98,29 +122,34 @@ class WeatherLocalDataSourceImpl(
         lastUpdate: Long,
         cityId: Long
     ) = withContext(Dispatchers.IO) {
-        weatherQueries.updateWeather(
-            conditionId,
-            main,
-            description,
-            icon,
-            temp,
-            feelsLike,
-            tempMin,
-            tempMax,
-            pressure,
-            humidity,
-            seaLevel,
-            groundLevel,
-            visibility,
-            windSpeed,
-            windDeg,
-            clouds,
-            sunrise,
-            sunset,
-            timeZone,
-            lastUpdate,
-            cityId
-        )
+        try {
+            weatherQueries.updateWeather(
+                conditionId,
+                main,
+                description,
+                icon,
+                temp,
+                feelsLike,
+                tempMin,
+                tempMax,
+                pressure,
+                humidity,
+                seaLevel,
+                groundLevel,
+                visibility,
+                windSpeed,
+                windDeg,
+                clouds,
+                sunrise,
+                sunset,
+                timeZone,
+                lastUpdate,
+                cityId
+            )
+            Result.success(true)
+        } catch (exception: SQLiteException) {
+            Result.failure(exception)
+        }
     }
 
 }

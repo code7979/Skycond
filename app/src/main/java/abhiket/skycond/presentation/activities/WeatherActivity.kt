@@ -1,15 +1,14 @@
 package abhiket.skycond.presentation.activities
 
 import abhiket.skycond.R
-import abhiket.skycond.data.CityWeatherRepositoryImpl
-import abhiket.skycond.data.local.CityWeatherLocalDataSourceImpl
 import abhiket.skycond.databinding.ActivityWeatherBinding
 import abhiket.skycond.di.Singleton
 import abhiket.skycond.presentation.adapter.WeatherAdapter
-import abhiket.skycond.presentation.model.CityWeather
+import abhiket.skycond.presentation.model.CityWeatherMain
 import abhiket.skycond.presentation.utils.ItemState
 import abhiket.skycond.presentation.utils.UiState
 import abhiket.skycond.presentation.viewmodels.WeatherViewModel
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -27,6 +26,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 
 class WeatherActivity : AppCompatActivity(), TabLayoutMediator.TabConfigurationStrategy,
     View.OnClickListener {
@@ -46,6 +46,16 @@ class WeatherActivity : AppCompatActivity(), TabLayoutMediator.TabConfigurationS
         }
     }
 
+    private val resultLauncher = registerForActivityResult(StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val intent = result.data
+            if (intent != null) {
+                val isReload = intent.getBooleanExtra(ManagerActivity.ACTION_RESULT_RELOAD, false)
+                if (isReload) viewModel.loadCityWeatherData()
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -60,7 +70,7 @@ class WeatherActivity : AppCompatActivity(), TabLayoutMediator.TabConfigurationS
         binding.tbActivityWeather.setNavigationOnClickListener(this)
 
         val viewPager = binding.weatherViewPager
-        weatherAdapter = WeatherAdapter()
+        weatherAdapter = WeatherAdapter(this)
         viewPager.adapter = weatherAdapter
 
         TabLayoutMediator(binding.indicatorTabLayout, viewPager, this).attach()
@@ -74,7 +84,7 @@ class WeatherActivity : AppCompatActivity(), TabLayoutMediator.TabConfigurationS
             }
         })
 
-        viewModel.cityWeatherState.observe(this) { state ->
+        viewModel.cityWeatherMainState.observe(this) { state ->
             when (state) {
                 is UiState.Loading -> {
                     binding.pbWeatherLoading.visibility = View.VISIBLE
@@ -82,13 +92,14 @@ class WeatherActivity : AppCompatActivity(), TabLayoutMediator.TabConfigurationS
 
                 is UiState.Success -> {
                     binding.pbWeatherLoading.visibility = View.GONE
-
-                    val cityWeatherList: List<CityWeather> = state.data
-                    weatherAdapter.setCityWeathers(cityWeatherList)
+                    val cityWeatherMainList: List<CityWeatherMain> = state.data
+                    weatherAdapter.setCityWeathers(cityWeatherMainList)
                 }
 
                 is UiState.Failure -> {
                     binding.pbWeatherLoading.visibility = View.GONE
+                    Toast.makeText(this, state.stringValue.asString(this), Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
         }
@@ -96,20 +107,26 @@ class WeatherActivity : AppCompatActivity(), TabLayoutMediator.TabConfigurationS
         viewModel.isUpdating.observe(this) { state ->
             when (state) {
                 is ItemState.Loading -> {
-                    val position = state.data
+                    val position = state.position
                     weatherAdapter.setUpdating(position, true)
                 }
 
                 is ItemState.Success -> {
-                    val position = state.data
-                    weatherAdapter.setUpdating(position, true)
+                    val position = state.position
+                    val cityWeather = state.data
+                    weatherAdapter.setUpdating(position, cityWeather)
+                    if (currentPosition == position) {
+                        supportActionBar?.let {
+                            it.subtitle = weatherAdapter.getFormattedLastUpdate(position)
+                        }
+                    }
                 }
 
                 is ItemState.Failure -> {
-                    val position = state.data
-                    val error = state.message.asString(this)
-                    weatherAdapter.setUpdating(position, true)
-                    Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
+                    val position = state.position
+                    weatherAdapter.setUpdating(position, false)
+                    Toast.makeText(this, state.stringValue.asString(this), Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
         }
@@ -141,7 +158,7 @@ class WeatherActivity : AppCompatActivity(), TabLayoutMediator.TabConfigurationS
 
     override fun onClick(view: View) {
         val activityIntent = Intent(this, ManagerActivity::class.java)
-        startActivity(activityIntent)
+        resultLauncher.launch(activityIntent)
     }
 
 }

@@ -1,18 +1,18 @@
 package abhiket.skycond.presentation.model;
 
-public final class CityWeather {
+public final class CityWeatherMain {
     private final City city;
     private final Weather weather;
 
     private boolean isUpdating;
 
-    public CityWeather(City city, Weather weather, boolean isUpdating) {
+    public CityWeatherMain(City city, Weather weather, boolean isUpdating) {
         this.city = city;
         this.weather = weather;
         this.isUpdating = isUpdating;
     }
 
-    public CityWeather(City city, Weather weather) {
+    public CityWeatherMain(City city, Weather weather) {
         this.city = city;
         this.weather = weather;
         this.isUpdating = false;

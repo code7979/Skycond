@@ -3,13 +3,11 @@
 package abhiket.skycond.presentation.utils
 
 import abhiket.skycond.R
-import abhiket.skycond.domain.model.City as DomainCity
-import abhiket.skycond.presentation.model.City as PresentationCity
 import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
-
-import abhiket.skycond.presentation.model.Weather as PresentationWeather
+import abhiket.skycond.domain.model.City as DomainCity
 import abhiket.skycond.domain.model.Weather as DomainWeather
+import abhiket.skycond.presentation.model.City as PresentationCity
+import abhiket.skycond.presentation.model.Weather as PresentationWeather
 
 const val EMPTY_STRING = ""
 const val CACHE_EXPIRY_TIME_IN_SEC = 600 //Second ( 10 minutes )
@@ -147,18 +145,5 @@ fun String.toDrawableRes(): Int {
         else -> {
             R.drawable.cloudy_day
         }
-    }
-}
-
-
-@StringRes
-fun Int.toStringRes(): Int {
-    return when (this) {
-        404 -> R.string.error_http_404
-        403 -> R.string.error_http_403
-        500 -> R.string.error_http_500
-        502 -> R.string.error_http_502
-        503 -> R.string.error_http_503
-        else -> R.string.error_fetching_data
     }
 }

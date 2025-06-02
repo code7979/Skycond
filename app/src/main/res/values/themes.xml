@@ -50,6 +50,8 @@
         <item name="colorSurfaceContainerHighest">@color/md_theme_surfaceContainerHighest</item>
         <item name="colorTextPrimary">@color/Neutral1000</item>
         <item name="colorTextSecondary">@color/Neutral800</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="actionModeStyle">@style/Theme.Skycond.ActionMode</item>
     </style>
 
     <style name="Theme.Skycond.Weather" parent="Theme.Skycond">
@@ -82,6 +84,10 @@
 
     <style name="WeatherPopupTheme" parent="ThemeOverlay.MaterialComponents.Light">
         <item name="colorControlNormal">@color/Neutral300A</item>
+    </style>
+
+    <style name="Theme.Skycond.ActionMode" parent="Widget.Material3.ActionMode">
+        <item name="background">@macro/m3_comp_top_app_bar_small_container_color</item>
     </style>
 
 </resources>

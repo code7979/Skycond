@@ -3,39 +3,50 @@ package abhiket.skycond.presentation.activities
 import abhiket.skycond.R
 import abhiket.skycond.databinding.ActivityManagerBinding
 import abhiket.skycond.di.Singleton
+import abhiket.skycond.presentation.adapter.ManageCitiesAdapter
 import abhiket.skycond.presentation.adapter.OnItemClickedListener
+import abhiket.skycond.presentation.adapter.OnItemLongClickedListener
 import abhiket.skycond.presentation.adapter.SearchedCityAdapter
+import abhiket.skycond.presentation.utils.UiState
 import abhiket.skycond.presentation.utils.setUpActionBar
 import abhiket.skycond.presentation.viewmodels.ManagerViewModel
-import abhiket.skycond.presentation.utils.UiState
+import android.app.Activity
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.ActionMode
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import java.util.Locale
 
 class ManagerActivity : AppCompatActivity(),
-    TextView.OnEditorActionListener,
-    OnItemClickedListener {
+    ActionMode.Callback,
+    OnItemClickedListener,
+    OnItemLongClickedListener,
+    TextView.OnEditorActionListener {
 
     private lateinit var binding: ActivityManagerBinding
-
-    private val searchedCityAdapter: SearchedCityAdapter by lazy {
-        SearchedCityAdapter(this)
-    }
+    private var actionMode: ActionMode? = null
 
     private val viewModel by viewModels<ManagerViewModel> {
         viewModelFactory {
@@ -48,24 +59,56 @@ class ManagerActivity : AppCompatActivity(),
         }
     }
 
+    private val searchedCityAdapter: SearchedCityAdapter by lazy {
+        SearchedCityAdapter(this, this)
+    }
+
+    private val addedCityAdapter: ManageCitiesAdapter by lazy {
+        ManageCitiesAdapter(
+            this as Context,
+            this as OnItemClickedListener,
+            this as OnItemLongClickedListener
+        )
+    }
+
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            val isReload = viewModel.isReload
+            val resultIntent = Intent()
+            resultIntent.putExtra(ACTION_RESULT_RELOAD, isReload)
+            setResult(Activity.RESULT_OK, resultIntent)
+            finish()
+        }
+    }
+
+    /**************************** [ACTIVITY LIFECYCLE METHODS ] ******************************/
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityManagerBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         ViewCompat.setOnApplyWindowInsetsListener(binding.activityManagerMain) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
         setUpActionBar(binding.tbActivityManager, R.drawable.ic_back_long)
+
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+
         binding.searchView.editText.setOnEditorActionListener(this)
 
-        val recyclerView = binding.resultsRecyclerView
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.itemAnimator = DefaultItemAnimator()
-        recyclerView.setHasFixedSize(true)
-        recyclerView.adapter = searchedCityAdapter
+        setUpRecyclerView(
+            recyclerView = binding.resultsRecyclerView,
+            adapter = searchedCityAdapter
+        )
+
+        setUpRecyclerView(
+            recyclerView = binding.manageCitiesRecyclerView,
+            adapter = addedCityAdapter
+        )
 
         viewModel.searchedQueryState.observe(this) { state ->
             when (state) {
@@ -86,12 +129,64 @@ class ManagerActivity : AppCompatActivity(),
                 }
             }
         }
+
+        viewModel.cityWeatherManageState.observe(this) { state ->
+            when (state) {
+                is UiState.Loading -> {
+
+                }
+
+                is UiState.Success -> {
+                    val cityWeathers = state.data
+                    addedCityAdapter.cityWeathers = cityWeathers
+                }
+
+                is UiState.Failure -> {
+
+                }
+            }
+        }
+
+        viewModel.selectedItemCount.observe(this) { count ->
+            actionMode?.let {
+                it.title = resources.getQuantityString(R.plurals.items_selected, count, count)
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        actionMode?.finish()
+        super.onDestroy()
+    }
+
+    /****************************************************************************************/
+
+    private fun <VH : RecyclerView.ViewHolder> setUpRecyclerView(
+        recyclerView: RecyclerView,
+        adapter: RecyclerView.Adapter<VH>
+    ) {
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.itemAnimator = DefaultItemAnimator()
+        recyclerView.setHasFixedSize(true)
+        recyclerView.adapter = adapter
     }
 
     override fun onEditorAction(textView: TextView, actionId: Int, event: KeyEvent?): Boolean {
         val typedText = textView.text.toString()
         viewModel.onSearchCity(typedText)
         return true
+    }
+
+    private fun showLocationOnMap(latitude: Double, longitude: Double) {
+        val uriString = String.format(Locale.getDefault(), "geo:%f,%f", latitude, longitude)
+        val gmmIntentUri = uriString.toUri()
+        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+        mapIntent.setPackage("com.google.android.apps.maps")
+        try {
+            startActivity(mapIntent)
+        } catch (e: ActivityNotFoundException) {
+            e.printStackTrace()
+        }
     }
 
     override fun onItemClicked(view: View, position: Int) {
@@ -106,18 +201,107 @@ class ManagerActivity : AppCompatActivity(),
                 Toast.makeText(this, city.getFormattedCity(), Toast.LENGTH_SHORT).show()
                 viewModel.onAddCity(city)
             }
+
+            R.id.item_city_weather_manage -> {
+                if (actionMode != null) {
+                    val imageView = view.findViewById<ImageView>(R.id.iv_manage_cities_checkbox)
+                    val cityWeather = addedCityAdapter.getCityWeather(position)
+                    if (cityWeather.isSelected) {
+                        imageView.setImageResource(0)
+                        cityWeather.isSelected = false
+                        viewModel.removeFromSelectedList(cityWeather.city.id)
+                    } else {
+                        imageView.setImageResource(R.drawable.ic_checkbox)
+                        cityWeather.isSelected = true
+                        viewModel.addToSelectedList(cityWeather.city.id)
+                    }
+                }
+
+            }
+
         }
     }
 
-    private fun showLocationOnMap(latitude: Double, longitude: Double) {
-        val uriString = String.format(Locale.getDefault(), "geo:%f,%f", latitude, longitude)
-        val gmmIntentUri = uriString.toUri()
-        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
-        mapIntent.setPackage("com.google.android.apps.maps")
-        try {
-            startActivity(mapIntent)
-        } catch (e: ActivityNotFoundException) {
-            e.printStackTrace()
+    override fun onItemLongClick(view: View, position: Int): Boolean {
+        return when (view.id) {
+            R.id.item_city_weather_manage -> {
+                // Called when the user performs a touch & hold on ManageCityItemView.
+                if (actionMode != null) {
+                    return false
+                }
+                //  Visible checkboxesar
+                addedCityAdapter.setInActionMode(true, position)
+                // Start the CAB using the ActionMode.Callback defined earlier.
+                actionMode = startSupportActionMode(this)
+                val imageView = view.findViewById<ImageView>(R.id.iv_manage_cities_checkbox)
+                    .apply { visibility = View.VISIBLE }
+                val cityWeather = addedCityAdapter.getCityWeather(position)
+                if (cityWeather.isSelected) {
+                    imageView.setImageResource(0)
+                    cityWeather.isSelected = false
+                    viewModel.removeFromSelectedList(cityWeather.city.id)
+                } else {
+                    imageView.setImageResource(R.drawable.ic_checkbox)
+                    cityWeather.isSelected = true
+                    viewModel.addToSelectedList(cityWeather.city.id)
+                }
+                return true;
+            }
+
+            else -> false
+
         }
+    }
+
+
+    /**************************** [ACTION MODE CALLBACK METHOD] ******************************/
+
+    override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+        mode.menuInflater.inflate(R.menu.contextual_munu_manager_city, menu)
+        mode.title = getString(R.string.select_item)
+        return true
+    }
+
+    override fun onPrepareActionMode(mode: ActionMode?, menu: Menu): Boolean {
+        return false
+    }
+
+    override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.contextual_menu_delete -> {
+                Toast.makeText(
+                    this@ManagerActivity,
+                    "Delete",
+                    Toast.LENGTH_SHORT
+                ).show()
+                mode.finish()
+                return true
+            }
+
+            R.id.contextual_menu_select_all -> {
+                Toast.makeText(
+                    this@ManagerActivity,
+                    "Select all",
+                    Toast.LENGTH_SHORT
+                ).show()
+                mode.finish()
+                return true
+            }
+
+            else -> {
+                false
+            }
+        }
+    }
+
+    override fun onDestroyActionMode(mode: ActionMode?) {
+        addedCityAdapter.setInActionMode(false, -1)
+        actionMode = null
+    }
+
+    /****************************************************************************************/
+
+    companion object {
+        const val ACTION_RESULT_RELOAD = "result_reload"
     }
 }

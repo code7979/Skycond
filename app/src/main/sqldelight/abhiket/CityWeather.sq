@@ -38,6 +38,7 @@ getCityWeatherById:
 SELECT
     City.id AS cityId,
     City.name AS cityName,
+    City.state AS cityState,
     City.country AS cityCountry,
     City.latitude AS cityLatitude,
     City.longitude AS cityLongitude,

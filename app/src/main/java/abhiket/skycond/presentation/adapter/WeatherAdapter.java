@@ -4,6 +4,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,55 +20,68 @@ import java.util.List;
 
 import abhiket.skycond.databinding.ItemWeatherBinding;
 import abhiket.skycond.presentation.model.City;
-import abhiket.skycond.presentation.model.CityWeather;
+import abhiket.skycond.presentation.model.CityWeatherMain;
 import abhiket.skycond.presentation.model.Weather;
 
-public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.WeatherViewHolder> {
+public final class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.WeatherViewHolder> {
     public static final String TAG = "WeatherAdapter";
-    private List<CityWeather> cityWeathers = new ArrayList<>();
+    private List<CityWeatherMain> cityWeatherMains = new ArrayList<>();
+    private final LayoutInflater layoutInflater;
+
+    public WeatherAdapter(Context context) {
+        this.layoutInflater = LayoutInflater.from(context);
+    }
+
+    public LayoutInflater getLayoutInflater() {
+        return layoutInflater;
+    }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void setCityWeathers(List<CityWeather> cityWeathers) {
-        this.cityWeathers = cityWeathers;
+    public void setCityWeathers(List<CityWeatherMain> cityWeatherMains) {
+        this.cityWeatherMains = cityWeatherMains;
         notifyDataSetChanged();
     }
 
     public String getCityName(int position) {
-        return cityWeathers.get(position).getCity().getName();
+        return cityWeatherMains.get(position).getCity().getName();
     }
 
     public City getCity(int position) {
-        return cityWeathers.get(position).getCity();
+        return cityWeatherMains.get(position).getCity();
     }
 
     public String getFormattedLastUpdate(int position) {
-        return cityWeathers.get(position).getWeather().getFormattedLastUpdate();
+        return cityWeatherMains.get(position).getWeather().getFormattedLastUpdate();
     }
 
     public void setUpdating(int position, boolean isUpdating) {
-        CityWeather cityWeather = cityWeathers.get(position);
-        cityWeather.setUpdating(isUpdating);
+        CityWeatherMain cityWeatherMain = cityWeatherMains.get(position);
+        cityWeatherMain.setUpdating(isUpdating);
+        notifyItemChanged(position);
+    }
+
+    public void setUpdating(int position, CityWeatherMain newCityWeatherMain) {
+        cityWeatherMains.set(position, newCityWeatherMain);
         notifyItemChanged(position);
     }
 
     @NonNull
     @Override
     public WeatherViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         ItemWeatherBinding binding = ItemWeatherBinding.inflate(layoutInflater, parent, false);
         return new WeatherViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull WeatherViewHolder holder, int position) {
-        CityWeather cityWeather = cityWeathers.get(position);
-        holder.bind(cityWeather);
+        CityWeatherMain cityWeatherMain = cityWeatherMains.get(position);
+        holder.bind(cityWeatherMain);
         //holder.animateCloud();
     }
 
     @Override
     public int getItemCount() {
-        return cityWeathers.size();
+        return cityWeatherMains.size();
     }
 
     /*************************[WeatherViewHolder]**********************/
@@ -79,15 +93,15 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.WeatherV
             this.binding = binding;
         }
 
-        public void bind(CityWeather cityWeather) {
-            if (cityWeather.isUpdating()) {
+        public void bind(CityWeatherMain cityWeatherMain) {
+            if (cityWeatherMain.isUpdating()) {
                 binding.pbWeatherUpdating.setVisibility(View.VISIBLE);
             } else {
                 binding.pbWeatherUpdating.setVisibility(View.GONE);
             }
 
-            Weather weather = cityWeather.getWeather();
-            binding.weatherDescription.setText(weather.getDescription());
+            Weather weather = cityWeatherMain.getWeather();
+            binding.weatherDescription.setText(weather.getMain());
             binding.temperatureCard.tvMainTemp.setText(weather.getCurrentTemperatureInCelsius());
             binding.temperatureCard.tvTempMin.setText(weather.getMinimumTemperatureInCelsius());
             binding.temperatureCard.tvTempMax.setText(weather.getMaximumTemperatureInCelsius());

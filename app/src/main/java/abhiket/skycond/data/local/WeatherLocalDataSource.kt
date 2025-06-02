@@ -1,12 +1,11 @@
 package abhiket.skycond.data.local
 
 import abhiket.Weather
-import app.cash.sqldelight.Query
 
 interface WeatherLocalDataSource {
-    suspend fun getAllWeather(): Query<Weather>
-    suspend fun getWeatherByCityId(cityId: Long): Query<Weather>
-    suspend fun deleteWeather(cityId: Long, weatherId: Long)
+    suspend fun getAllWeather(): Result<List<Weather>>
+    suspend fun getWeatherByCityId(cityId: Long): Result<Weather>
+    suspend fun deleteWeather(cityId: Long): Result<Boolean>
     suspend fun updateWeather(
         conditionId: Long,
         main: String,
@@ -29,7 +28,7 @@ interface WeatherLocalDataSource {
         timeZone: Long,
         lastUpdate: Long,
         cityId: Long
-    )
+    ): Result<Boolean>
 
     suspend fun insertWeather(
         cityId: Long,
@@ -53,5 +52,5 @@ interface WeatherLocalDataSource {
         sunset: Long,
         timeZone: Long,
         lastUpdate: Long
-    )
+    ): Result<Boolean>
 }

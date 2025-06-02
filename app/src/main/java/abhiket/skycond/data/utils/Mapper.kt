@@ -117,3 +117,38 @@ internal fun abhiket.CityWeather.asCityWeather(): CityWeather {
         )
     )
 }
+
+internal fun abhiket.GetCityWeatherById.asCityWeather(): CityWeather {
+    return CityWeather(
+        city = City(
+            id = cityId,
+            name = cityName,
+            latitude = cityLatitude,
+            longitude = cityLongitude,
+            state = cityState,
+            country = cityCountry
+        ),
+        weather = Weather(
+            conditionId = conditionId,
+            main = main,
+            description = description,
+            icon = icon,
+            temp = temp,
+            feelsLike = feelsLike,
+            tempMin = tempMin,
+            tempMax = tempMax,
+            pressure = pressure,
+            humidity = humidity,
+            seaLevel = seaLevel ?: 0L,
+            groundLevel = groundLevel ?: 0L,
+            visibility = visibility,
+            windSpeed = windSpeed,
+            windDeg = windDeg,
+            clouds = clouds,
+            sunrise = sunrise,
+            sunset = sunset,
+            timeZone = timeZone,
+            lastUpdate = lastUpdate,
+        )
+    )
+}

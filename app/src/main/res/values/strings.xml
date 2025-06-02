@@ -52,4 +52,13 @@
     <string name="clear_sky">Clear Sky</string>
     <string name="_15_c">15°C</string>
     <string name="_10c">10C°</string>
+    <string name="delete">Delete</string>
+    <string name="select_all">Select All</string>
+    <string name="select_item">Select Item</string>
+
+    <plurals name="items_selected">
+        <item quantity="one">%d item selected</item>
+        <item quantity="other">%d items selected</item>
+    </plurals>
+
 </resources>
