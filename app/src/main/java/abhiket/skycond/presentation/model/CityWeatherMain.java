@@ -33,4 +33,5 @@ public final class CityWeather {
     public Weather getWeather() {
         return weather;
     }
+
 }

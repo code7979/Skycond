@@ -7,17 +7,17 @@
     android:layout_marginStart="@dimen/large"
     android:layout_marginEnd="@dimen/large"
     android:layout_marginBottom="@dimen/large"
-    android:background="@drawable/weather_screen_card_bg"
+    android:theme="@style/Theme.Skycond.Weather"
+    android:background="@drawable/bg_day_sky_gradient"
     android:orientation="vertical"
     android:padding="@dimen/medium">
 
-    <Button
+    <ImageView
         android:id="@+id/btn_manage_cities_remove"
-        style="?attr/materialIconButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:background="@drawable/bg_selector_checkbox"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:contentDescription="@string/remove_city"
-        app:icon="@drawable/ic_close"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -27,6 +27,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Ahmedabad"
+        android:layout_marginStart="@dimen/medium"
         android:textColor="?attr/colorTextPrimary"
         android:textSize="@dimen/medium_text"
         app:layout_constraintBottom_toTopOf="@+id/tv_manage_cities_state_country"
@@ -64,6 +65,7 @@
         android:id="@+id/tv_manage_cities_min_max"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="?attr/colorTextSecondary"
         android:text="32°/42°"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
