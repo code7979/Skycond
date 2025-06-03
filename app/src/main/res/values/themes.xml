@@ -54,12 +54,37 @@
         <item name="actionModeStyle">@style/Theme.Skycond.ActionMode</item>
     </style>
 
-    <style name="Theme.Skycond.Weather" parent="Theme.Skycond">
+    <style name="Theme.Skycond.Weather.Day" parent="Theme.Skycond">
         <item name="android:windowBackground">@drawable/bg_day_sky_gradient</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="weatherIconColor">@color/lite_icon_color</item>
         <item name="titleTextColor">@color/black_text_color</item>
 
+        <!-- Color for text border and icon -->
+        <item name="colorTextPrimary">@color/color_text_primary</item>
+        <item name="colorTextSecondary">@color/color_text_secondary</item>
+        <item name="colorDivider">@color/color_divider</item>
+        <item name="colorStroke">@color/colorStroke</item>
+
+        <item name="searchEditTextColor">@color/lite_search_edit_text_color</item>
+        <item name="subtitleTextColor">@color/lite_subtitle_text_color</item>
+
+        <!-- Setting custom font -->
+        <item name="fontFamily">@font/poppins_regular</item>
+
+        <!-- Transparent Status Bar -->
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+
+    </style>
+
+    <style name="Theme.Skycond.Weather.Night" parent="Theme.Skycond">
+        <item name="android:windowBackground">@drawable/bg_day_sky_gradient</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="weatherIconColor">@color/lite_icon_color</item>
+        <item name="titleTextColor">@color/black_text_color</item>
+
+        <!-- Color for text border and icon -->
         <item name="colorTextPrimary">@color/color_text_primary</item>
         <item name="colorTextSecondary">@color/color_text_secondary</item>
         <item name="colorDivider">@color/color_divider</item>

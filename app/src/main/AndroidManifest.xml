@@ -26,7 +26,7 @@
         <activity
             android:name=".presentation.activities.WeatherActivity"
             android:exported="true"
-            android:theme="@style/Theme.Skycond.Weather">
+            android:theme="@style/Theme.Skycond.Weather.Day">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
